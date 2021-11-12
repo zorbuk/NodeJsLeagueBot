@@ -37,10 +37,7 @@ module.exports = {
     },
     existeColorPuntoExacto: (color,x,y)=>{
         var img = robot.screen.capture(0, 0, 1920, 1080);
-        if(img.colorAt(x, y).toLowerCase() === color.toLowerCase()){
-            return true;
-        }else{
-            return false;
-        }
+        
+        return img.colorAt(x, y).toLowerCase() === color.toLowerCase();
     }
 };

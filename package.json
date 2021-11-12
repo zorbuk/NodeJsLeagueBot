@@ -1,0 +1,35 @@
+{
+  "name": "nodejsleaguebot-master",
+  "version": "1.0.0",
+  "description": "Made with NodeJs, RobotJs and Https.",
+  "main": "config.js",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "fetch": "^1.1.0",
+    "fs-extra": "^9.0.1",
+    "ip": "^1.1.5",
+    "memoryjs": "^3.4.0",
+    "node-key-sender": "^1.0.11",
+    "node-fetch": "^2.6.1",
+    "robotjs": "^0.6.0",
+    "request": "^2.88.2",
+    "superagent": "^6.1.0",
+    "superagent-use": "^0.1.0",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "zorbuk",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zorbuk/NodeJsLeagueBot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zorbuk/NodeJsLeagueBot/issues"
+  },
+  "homepage": "https://github.com/zorbuk/NodeJsLeagueBot#readme"
+}

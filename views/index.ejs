@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/head"); %>
+    <meta http-equiv="refresh" content="3">
+</head>
+<body class="container">
+
+<header>
+    <%- include("partials/header", {test: "yep"}); %>
+</header>
+
+<main>
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <img height="92" width="92" src="http://ddragon.leagueoflegends.com/cdn/11.22.1/img/profileicon/<%- playerIcon -%>.png">
+                            </div>
+                            <div class="col">
+                                <h5><%- playerName -%></h5>
+                                <p>Nivel <%- playerLevel -%></p>
+                                <p>
+                                    <div class="progress" style="background-color:white;border:1px solid black;">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: '<%- playerLevelProgress -%>%';" aria-valuenow="<%- playerLevelProgress -%>" aria-valuemin="0" aria-valuemax="100"><%- playerLevelProgress -%>%</div>
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+
+              
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <p><b>👁‍🗨 Estado:</b> <%- playerStatus -%></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <p><a type="button" href="iniciar" class="btn btn-outline-success">🟢 Iniciar</a></p>
+                        <p><a type="button" href="detener" class="btn btn-outline-danger">🔴 Detener</a></p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        
+
+        
+    </div>
+</main>
+
+<footer>
+    <%- include("partials/footer"); %>
+</footer>
+
+</body>
+</html>

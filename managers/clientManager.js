@@ -53,9 +53,9 @@ module.exports = {
         });
     },
     // TODO: Mejorar el sistema de pickear campeón
-    pickChampion: (port, campeon)=>{
+    pickChampion: (port, champion)=>{
             for (let randomId = 0; randomId < 10; randomId++) {
-                let data = JSON.stringify({ actorCellId: 0, championId: campeon, completed: true, id:randomId, isAllyAction:true, type:'string' });
+                let data = JSON.stringify({ actorCellId: 0, championId: champion, completed: true, id:randomId, isAllyAction:true, type:'string' });
                 riotApi.query(`/lol-champ-select/v1/session/actions/${randomId}`, 'PATCH', data, port);
             }
     },

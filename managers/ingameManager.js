@@ -1,12 +1,11 @@
 const config = require('../config.js');
 const gameManager = require('../managers/gameManager.js');
-const { puertoIngame } = require('../config.js');
 
 module.exports = {
     getBestAlly: async () => {
-        let inGamePlayerList = await gameManager.getPlayerList(config.puertoIngame);
+        let inGamePlayerList = await gameManager.getPlayerList(config.portIngame);
         let inGamePlayerListParsed = JSON.parse(inGamePlayerList);
-        let currentPlayingPlayerName = await gameManager.getActivePlayerName(config.puertoIngame);
+        let currentPlayingPlayerName = await gameManager.getActivePlayerName(config.portIngame);
         currentPlayingPlayerName = currentPlayingPlayerName.replace(/\"/g, "");
         let playerIndex = 2;
         let choosenPlayerIndex = 2;
@@ -27,7 +26,7 @@ module.exports = {
         return choosenPlayerIndex;
     },
     getEventHappend: async (name) => {
-        let events = await gameManager.getGameEvents(puertoIngame);
+        let events = await gameManager.getGameEvents(config.portIngame);
         let parsedEvents = JSON.parse(events);
 
         parsedEvents["Events"].forEach(event => {
@@ -39,7 +38,7 @@ module.exports = {
         return false;
     },
     getGameTime: async () => {
-        let gameStats = await gameManager.getGameStats(puertoIngame);
+        let gameStats = await gameManager.getGameStats(config.portIngame);
         return JSON.parse(gameStats)["gameTime"];
     }
 }

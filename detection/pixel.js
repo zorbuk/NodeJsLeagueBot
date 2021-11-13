@@ -20,7 +20,7 @@ module.exports = {
         minimapa_subditos_aliados:`4c98d8`,
         minimapa_monstruos_jungla:`99691f`
     },
-    obtenerColor: (color, startX, startY, width, height)=>{
+    obtainColor: (color, startX, startY, width, height)=>{
         var img = robot.screen.capture(startX, startY, width, height);
         for (let x = startX; x < width; x++) {
             for (let y = startY; y < height; y++) {
@@ -35,7 +35,7 @@ module.exports = {
     
         return null;
     },
-    existeColorPuntoExacto: (color,x,y)=>{
+    existColorInExactPoint: (color,x,y)=>{
         var img = robot.screen.capture(0, 0, 1920, 1080);
         
         return img.colorAt(x, y).toLowerCase() === color.toLowerCase();

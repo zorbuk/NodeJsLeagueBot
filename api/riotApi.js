@@ -1,10 +1,10 @@
 const https = require('https');
 const config = require('../config.js');
-const fs = require('fs');
 
 module.exports = {
-    consulta: async (url, metodo, apiFileName, requestData, puerto)=> {
-      try {
+    query: async (url, metodo, requestData, puerto)=> {
+      
+      return new Promise((resolve, reject) => {
         if(requestData == null || requestData === undefined){
             requestData = '';
         }
@@ -30,19 +30,14 @@ module.exports = {
                       __data += d;
                     });
                     res.on('end', ()=> {
-                        fs.writeFile(`api/respuestas/${apiFileName}.json`, __data, (err) =>{
-                          if (err) return console.log(err);
-                        });
+                      resolve(__data);
                     });
                   });
                   
                   if(metodo === 'POST' || metodo === 'PATCH')
                   req.write(requestData);
 
-                  await config.sleep(0.1);
                   req.end();
-                }catch(error){
-                  //error.
-                }
+                });
   },
 };

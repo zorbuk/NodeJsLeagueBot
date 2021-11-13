@@ -1,17 +1,4 @@
 module.exports = {
-    msPorDefecto: 100,
-    rangoBusquedaPixel: {
-        x:500, 
-        y:400, 
-        width: 330, 
-        height: 330
-    },
-    rangoBusquedaMinimapa: {
-        x: 1689,
-        y: 846,
-        width: 225,
-        height: 225
-    },
     screenSize: {
         x: 1920,
         y: 1080,
@@ -154,18 +141,18 @@ module.exports = {
     },
     // --------------- Fin de los Offsets de la Memoria
     auth: null,
-    puerto: 0,
-    puertoIngame: 2999,
+    port: 0,
+    portIngame: 2999,
     localServerHost: `127.0.0.1`, // localhost
-    localServerPuerto: 8000, // 8000
-    tipoCola: {
-        botsIntroduccion: 830,
-        botsIntermedio: 850,
-        aram: 450,
-        herramientaPractica: 0
+    localServerPort: 8000, // 8000
+    QueueType: {
+        IntroBots: 830,
+        IntermediateBots: 850,
+        Aram: 450,
+        PracticeTool: 0
     },
-    campeon: {
-        Ninguno: -1,
+    Champion: {
+        None: -1,
         Shaco: 35,
         DrMundo: 36,
         Rammus: 33,

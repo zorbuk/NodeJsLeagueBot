@@ -1,54 +1,89 @@
-const fs = require('fs');
 const riotApi = require('../api/riotApi.js');
 
 module.exports = {
-    // --------------- Funciones https://lcu.vivide.re/#operation--lol-summoner-v1-current-summoner-get
-    obtenerGameFlow: (puerto)=>{
-        riotApi.consulta('/lol-gameflow/v1/gameflow-phase', 'GET', 'gameflow-phase', '', puerto);
-        return fs.readFileSync('api/respuestas/gameflow-phase.json').toString();
+    // --------------- Funciones : https://lcu.vivide.re/#operation--lol-summoner-v1-current-summoner-get
+    getGameFlow: (port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/lol-gameflow/v1/gameflow-phase', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerActivePlayerName: (puerto)=>{
-        riotApi.consulta('/liveclientdata/activeplayername', 'GET', 'activeplayername', '', puerto);
-        return fs.readFileSync('api/respuestas/activeplayername.json').toString();
+    getActivePlayerName: (port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/activeplayername', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerAllGameData: (puerto)=>{
-        riotApi.consulta('/liveclientdata/allgamedata', 'GET', 'allgamedata', '', puerto);
-        return fs.readFileSync('api/respuestas/allgamedata.json').toString();
+    getAllGameData: (port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/allgamedata', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerActivePlayerData: (puerto)=>{
-        riotApi.consulta('/liveclientdata/activeplayer', 'GET', 'activeplayer', '', puerto);
-        return fs.readFileSync('api/respuestas/activeplayer.json').toString();
+    getActivePlayerData: (port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/activeplayer', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerActivePlayerHabilities:(puerto)=>{
-        riotApi.consulta('/liveclientdata/activeplayerabilities', 'GET', 'activeplayerabilities', '', puerto);
-        return fs.readFileSync('api/respuestas/activeplayerabilities.json').toString();
+    getActivePlayerHabilities:(port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/activeplayerabilities', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerActivePlayerRunes:(puerto)=>{
-        riotApi.consulta('/liveclientdata/activeplayerrunes', 'GET', 'activeplayerrunes', '', puerto);
-        return fs.readFileSync('api/respuestas/activeplayerrunes.json').toString();
+    getActivePlayerRunes:(port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/activeplayerrunes', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerPlayerList:(puerto)=>{
-        riotApi.consulta('/liveclientdata/playerlist', 'GET', 'playerlist', '', puerto);
-        return fs.readFileSync('api/respuestas/playerlist.json').toString();
+    getPlayerList:(port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/playerlist', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerPlayerScore:(puerto, playerName)=>{
-        riotApi.consulta(`/liveclientdata/playerscores?summonerName=${playerName}`, 'GET', 'playerscores', '', puerto);
-        return fs.readFileSync('api/respuestas/playerscores.json').toString();
+    getPlayerScore:(port, playerName)=>{
+        return new Promise((resolve) => {
+            riotApi.query(`/liveclientdata/playerscores?summonerName=${playerName}`, 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerPlayerSummonerSpells:(puerto, playerName)=>{
-        riotApi.consulta(`/liveclientdata/playersummonerspells?summonerName=${playerName}`, 'GET', 'playersummonerspells', '', puerto);
-        return fs.readFileSync('api/respuestas/playersummonerspells.json').toString();
+    getPlayerSummonerSpells:(port, playerName)=>{
+        return new Promise((resolve) => {
+            riotApi.query(`/liveclientdata/playersummonerspells?summonerName=${playerName}`, 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerPlayerItems:(puerto, playerName)=>{
-        riotApi.consulta(`/liveclientdata/playeritems?summonerName=${playerName}`, 'GET', 'playeritems', '', puerto);
-        return fs.readFileSync('api/respuestas/playeritems.json').toString();
+    getPlayerItems:(port, playerName)=>{
+        return new Promise((resolve) => {
+            riotApi.query(`/liveclientdata/playeritems?summonerName=${playerName}`, 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerGameEvents:(puerto)=>{
-        riotApi.consulta('/liveclientdata/eventdata', 'GET', 'eventdata', '', puerto);
-        return fs.readFileSync('api/respuestas/eventdata.json').toString();
+    getGameEvents:(port)=>{
+        return new Promise((resolve) => {
+            riotApi.query('/liveclientdata/eventdata', 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     },
-    obtenerGameStats:(puerto)=>{
-        riotApi.consulta(`/liveclientdata/gamestats`, 'GET', 'gamestats', '', puerto);
-        return fs.readFileSync('api/respuestas/gamestats.json').toString();
+    getGameStats:(port)=>{
+        return new Promise((resolve) => {
+            riotApi.query(`/liveclientdata/gamestats`, 'GET', '', port).then(result => {
+                resolve(result);
+            })
+        });
     }
 };

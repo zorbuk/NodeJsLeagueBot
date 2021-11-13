@@ -1,17 +1,15 @@
+'use strict';
 const robot = require("robotjs");
 const config = require("./config.js");
 const clientManager = require("./managers/clientManager.js");
 const gameManager = require("./managers/gameManager.js");
 const ingameManager = require("./managers/ingameManager.js");
 const consoleManager = require("./managers/consoleManager.js");
-const { tipoCola, campeon } = require("./config.js");
+const { Champion, QueueType } = require("./config.js");
 const ks = require('node-key-sender');
 const http = require('http');
 const express = require('express');
-const path = require('path');
 const ip = require("ip");
-const { nextTick } = require("process");
-const fs = require('fs');
 
 /* ********************
     Este proyecto ha sido realizado por Zorbuk.
@@ -19,20 +17,13 @@ const fs = require('fs');
 
     Las donaciones por paypal son bienvenidas: @mvrec
 
-    Se ha usado lo siguiente:
-    - Visual Studio Code, el editor.
-    - Node.js, el framework.
-    - Npm, el package manager.
-    - Robot.js, framework para pixeles, control del ratón y del teclado.
-    - ks, control del teclado ya que robot.js da algunos problemas.
-    - Fs, modulo para archivos del sistema.
-    - MemoryJs, leer datos del juego desde los offsets de la memoria.
-    - Express, http, ip, path, ejs, para la web local.
+    Las dependencias usadas se pueden ver en package.json
 
     Configuración Básica:
-    leagueBot.js || __cola : [por defecto, Bots Introducción]
-    leagueBot.js || __campeon : [Por defecto, Ashe]
+    leagueBot.js || __queue : [por defecto, Bots Introducción]
+    leagueBot.js || __champion : [Por defecto, Ashe]
     config.js || screenSize : [Por defecto, 1920*1080]
+    config.js || leagueOfLegendsLockfile : [Donde esta tu archivo lockfile de league of legends]
 
 */
 
@@ -59,27 +50,30 @@ app.use(express.json());
     Rutas
 */
 
-app.get('/', function(req,res){
-    let __player = JSON.parse(clientManager.obtenerCurrentSummoner(config.puerto));
-    let __status = gameManager.obtenerGameFlow(config.puerto);
+app.get('/', async function(req,res){
+    let __player = await clientManager.getCurrentSummoner(config.port);
+    let __parsedPlayer = JSON.parse(__player);
+
+    let __status = await gameManager.getGameFlow(config.port);
+
     res.render('index', 
-    {playerName: __player["displayName"], 
-    playerLevel: __player["summonerLevel"], 
-    playerIcon: __player["profileIconId"], 
-    playerLevelProgress: __player["percentCompleteForNextLevel"],
+    {playerName: __parsedPlayer["displayName"], 
+    playerLevel: __parsedPlayer["summonerLevel"], 
+    playerIcon: __parsedPlayer["profileIconId"], 
+    playerLevelProgress: __parsedPlayer["percentCompleteForNextLevel"],
     playerStatus: __status}
     );
   });
 
 app.get('/iniciar', function(req, res){
-    __ejecutar = true;
-    procesoIniciarPartida();
+    __execute = true;
+    processStartGame();
     res.redirect('/');
 });
 
 
 app.get('/detener', function(req, res){
-    __ejecutar = false;
+    __execute = false;
     res.redirect('/');
 });
 
@@ -92,81 +86,76 @@ const server = http.createServer(app);
 // ********************
 
 main();
-let __cola = tipoCola.botsIntroduccion;
-let __campeon = campeon.Ashe;
+let __queue = QueueType.IntroBots;
+let __champion = Champion.Ashe;
 let __botClientStatus;
-let __botBuscandoPartida = false;
-let __botPartidaIniciada = false;
-let __ejecutar = true;
+let __botLookingForGame = false;
+let __execute = true;
 
 // ********************
 
 async function main(){
     console.clear();
-    consoleManager.escribir("LeagueBot JS hecho por Zorbuk en Nodejs con Robotjs");
-    consoleManager.escribir("☕ Si deseas apoyar el proyecto, las donaciones son bienvenidas, pero no obligatorias 🙏");
-    consoleManager.escribir("❤️ Paypal: @mvrec")
-    consoleManager.escribir("👉 Las actualizaciones las encontrarás en https://github.com/zorbuk/NodeJsLeagueBot")
-    consoleManager.escribir("👽 Si tienes algun problema publicalo en https://github.com/zorbuk/NodeJsLeagueBot/issues")
-    consoleManager.escribir("🗣 Discord: https://discord.gg/KZXVh8SbA9")
+    consoleManager.write("LeagueBot JS hecho por Zorbuk en Nodejs con Robotjs");
+    consoleManager.write("☕ Si deseas apoyar el proyecto, las donaciones son bienvenidas, pero no obligatorias 🙏");
+    consoleManager.write("❤️ Paypal: @mvrec")
+    consoleManager.write("👉 Las actualizaciones las encontrarás en https://github.com/zorbuk/NodeJsLeagueBot")
+    consoleManager.write("👽 Si tienes algun problema publicalo en https://github.com/zorbuk/NodeJsLeagueBot/issues")
+    consoleManager.write("🗣 Discord: https://discord.gg/KZXVh8SbA9")
 
     while(config.auth===null){
-        clientManager.inicializar();
+        clientManager.initialization();
         await config.sleep(2);
     }
 
-    consoleManager.escribir(`✅ Auth '${config.auth}'`);
-    consoleManager.escribir(`✅ Puertos 'Cliente: ${config.puerto}, Juego: ${config.puertoIngame}'`);
+    consoleManager.write(`✅ Auth '${config.auth}'`);
+    consoleManager.write(`✅ Puertos 'Cliente: ${config.port}, Juego: ${config.portIngame}'`);
 
-    server.listen(config.localServerPuerto);
-    consoleManager.escribir(`✅ ${ip.address()}:${config.localServerPuerto}`);
-
-    fs.writeFile(`api/respuestas/gameflow-phase.json`, '"None"', (err) =>{
-        if (err) return console.log(err);
-    });
+    server.listen(config.localServerPort);
+    consoleManager.write(`✅ ${ip.address()}:${config.localServerPort}`);
 }
 
-async function procesoIniciarPartida(){
-    while(__ejecutar){
+async function processStartGame(){
+    while(__execute){
         
         // ********************
         // Evitar el spam en consola.
         // ********************
 
-        if(gameManager.obtenerGameFlow(config.puerto) != __botClientStatus){
-            __botClientStatus = gameManager.obtenerGameFlow(config.puerto);
-            consoleManager.escribir(`👁‍🗨 Estado del bot: ${JSON.parse(__botClientStatus)}`);
+        if(await gameManager.getGameFlow(config.port) != __botClientStatus){
+            __botClientStatus = await gameManager.getGameFlow(config.port);
+            consoleManager.write(`👁‍🗨 Estado del bot: ${__botClientStatus}`);
         }
 
         // ********************
-        switch(gameManager.obtenerGameFlow(config.puerto)){
+        switch(await gameManager.getGameFlow(config.port)){
                 // Inactivo.
             case `"None"`:
-                clientManager.crearPartida(config.puerto, __cola);
+                await clientManager.createGame(config.port, __queue);
                 break;
                 // Partida creada.
             case `"Lobby"`:
-                if(!__botBuscandoPartida){
-                    clientManager.buscarPartida(config.puerto);
-                    __botBuscandoPartida = true;
+                if(!__botLookingForGame){
+                    await clientManager.findGame(config.port);
+                    __botLookingForGame = true;
                 }
                 break;
                 // Una partida ha sido encontrada.
             case `"ReadyCheck"`:
-                clientManager.aceptarPartida(config.puerto);
+                await clientManager.acceptGame(config.port);
                 break;
                 // En seleccion de campeón.
             case `"ChampSelect"`:
-                if(__cola != config.tipoCola.aram)
-                    clientManager.pickearCampeon(config.puerto, __campeon);
+                if(__queue != config.QueueType.Aram)
+                clientManager.pickChampion(config.port, __champion);
                 break;
                 // La partida está en progreso.
             case `"InProgress"`:
-                if(__botGameStarted){
-                    // TODO: Mejorar esto, se puede hacer mejor
-                    let indexMejorAliado = ingameManager.obtenerMejorAliado();
+                // TODO: Mejorar esto.
+                if(await ingameManager.getGameTime() > 30.0){
+                    let iBestAlly = await ingameManager.getBestAlly();
 
-                    robot.keyTap(`f${indexMejorAliado}`);
+                    robot.keyTap(`f${iBestAlly}`);
 
                     robot.moveMouse((config.screenSize.x /2) + 60, (config.screenSize.y /2) - 60)
                         
@@ -177,12 +166,8 @@ async function procesoIniciarPartida(){
                     robot.moveMouse((config.screenSize.x /2) - 60, (config.screenSize.y /2) + 60)
                     robot.mouseClick("right");
 
-                    ks.sendKey(`f${indexMejorAliado}`);
-                }else{
-                    if(ingameManager.ocurrioEvento("GameStart"))
-                    __botPartidaIniciada = true;
+                    ks.sendKey(`f${iBestAlly}`);
                 }
-
                 break;
                 // Dar honor
             case `"PreEndOfGame"`:
@@ -191,9 +176,8 @@ async function procesoIniciarPartida(){
                 break;
                 // Salir de la partida
             case `"EndOfGame"`:
-                __botBuscandoPartida = false;
-                __botPartidaIniciada = false;
-                clientManager.crearPartida(config.puerto, __cola);
+                __botLookingForGame = false;
+                await clientManager.createGame(config.port, __queue);
                 break;
             default:
                 await config.sleep(0.1);
@@ -201,8 +185,4 @@ async function procesoIniciarPartida(){
         }
         await config.sleep(1);
     }
-
-    fs.writeFile(`api/respuestas/gameflow-phase.json`, '"None"', (err) =>{
-        if (err) return console.log(err);
-    });
 }

@@ -1,9 +1,4 @@
 module.exports = {
-    screenSize: {
-        x: 1920,
-        y: 1080,
-    },
-    leagueOfLegendsLockfile: `E:\\Juegos\\Riot Games\\League of Legends\\lockfile`,
     // --------------- El bot no usa memoria, así que esta parte no se utiliza
     offsets: {
         GameTime: `0x30d2c58L`,

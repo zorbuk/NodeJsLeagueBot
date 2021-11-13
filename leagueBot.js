@@ -5,11 +5,12 @@ const clientManager = require("./managers/clientManager.js");
 const gameManager = require("./managers/gameManager.js");
 const ingameManager = require("./managers/ingameManager.js");
 const consoleManager = require("./managers/consoleManager.js");
-const { Champion, QueueType } = require("./config.js");
 const ks = require('node-key-sender');
 const http = require('http');
 const express = require('express');
 const ip = require("ip");
+const fs = require('fs');
+
 
 /* ********************
     Este proyecto ha sido realizado por Zorbuk.
@@ -63,7 +64,51 @@ app.get('/', async function(req,res){
     playerLevelProgress: __parsedPlayer["percentCompleteForNextLevel"],
     playerStatus: __status}
     );
-  });
+});
+
+const loadSettings = () =>{
+    try {
+        const buffer = fs.readFileSync("./settings.json")
+        const stringData = buffer.toString()
+        return JSON.parse(stringData)
+    } catch (error) {
+        consoleManager.write(error);
+        return []
+    }
+}
+
+const writeSettings = (data) =>{
+    const textJSON = JSON.stringify(data)
+    fs.writeFileSync("./settings.json", textJSON)
+}
+
+app.get('/settings', function(req, res){
+
+    let settings = loadSettings();
+
+    res.render('config', {
+        selectedChampionId: settings["selectedChampion"],
+        allChampionsList: config.Champion, 
+        selectedQueueId: settings["selectedQueue"],
+        allQueues: config.QueueType,
+        settingScreenSizeX: settings["screenSizeX"],
+        settingScreenSizeY: settings["screenSizeY"],
+    });
+});
+
+app.post('/applySettings', (req, res) => {
+
+    writeSettings({
+        selectedQueue: req.body.selectedQueue,
+        selectedChampion: req.body.selectedChampion,
+        screenSizeX: req.body.screenSizeX,
+        screenSizeY: req.body.screenSizeY
+    })
+
+    consoleManager.write("Configuración guardada.")
+
+    res.redirect('/');
+});
 
 app.get('/iniciar', function(req, res){
     __execute = true;
@@ -86,8 +131,6 @@ const server = http.createServer(app);
 // ********************
 
 main();
-let __queue = QueueType.IntroBots;
-let __champion = Champion.Ashe;
 let __botClientStatus;
 let __botLookingForGame = false;
 let __execute = true;
@@ -131,7 +174,7 @@ async function processStartGame(){
         switch(await gameManager.getGameFlow(config.port)){
                 // Inactivo.
             case `"None"`:
-                await clientManager.createGame(config.port, __queue);
+                await clientManager.createGame(config.port, loadSettings()["selectedQueue"]);
                 break;
                 // Partida creada.
             case `"Lobby"`:
@@ -146,8 +189,8 @@ async function processStartGame(){
                 break;
                 // En seleccion de campeón.
             case `"ChampSelect"`:
-                if(__queue != config.QueueType.Aram)
-                clientManager.pickChampion(config.port, __champion);
+                if(loadSettings()["selectedQueue"] != config.QueueType.Aram)
+                clientManager.pickChampion(config.port, loadSettings()["selectedChampion"]);
                 break;
                 // La partida está en progreso.
             case `"InProgress"`:
@@ -157,13 +200,13 @@ async function processStartGame(){
 
                     robot.keyTap(`f${iBestAlly}`);
 
-                    robot.moveMouse((config.screenSize.x /2) + 60, (config.screenSize.y /2) - 60)
+                    robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeY"] /2) - 60)
                         
                     ks.sendKey('a');
 
                     await config.sleep(1);
 
-                    robot.moveMouse((config.screenSize.x /2) - 60, (config.screenSize.y /2) + 60)
+                    robot.moveMouse((loadSettings()["screenSizeX"] /2) - 60, (loadSettings()["screenSizeY"] /2) + 60)
                     robot.mouseClick("right");
 
                     ks.sendKey(`f${iBestAlly}`);
@@ -171,13 +214,13 @@ async function processStartGame(){
                 break;
                 // Dar honor
             case `"PreEndOfGame"`:
-                robot.moveMouse((config.screenSize.x /2) + 60, (config.screenSize.y /2) - 60)
+                robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeX"] /2) - 60)
                 robot.mouseClick("left");
                 break;
                 // Salir de la partida
             case `"EndOfGame"`:
                 __botLookingForGame = false;
-                await clientManager.createGame(config.port, __queue);
+                await clientManager.createGame(config.port, loadSettings()["selectedQueue"]);
                 break;
             default:
                 await config.sleep(0.1);

@@ -7,7 +7,9 @@ module.exports = {
     //  ClientStartup //
     // -------------- //
     initialization: ()=>{
-        const buffer = fs.readFileSync(config.leagueOfLegendsLockfile);
+        const lockfilebuffer = fs.readFileSync("./lockfilepath.json")
+        const lockfiledata = lockfilebuffer.toString()
+        const buffer = fs.readFileSync(JSON.parse(lockfiledata)["lockfilepath"]);
         const args = buffer.toString().split(":");
         config.auth = Buffer.from('riot:'+args[3]).toString('base64');
         config.port = args[2];

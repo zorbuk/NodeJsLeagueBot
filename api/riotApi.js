@@ -2,40 +2,40 @@ const https = require('https');
 const config = require('../config.js');
 
 module.exports = {
-    query: async (url, metodo, requestData, puerto)=> {
+    query: async (path, method, data, port)=> {
       
       return new Promise((resolve, reject) => {
-        if(requestData == null || requestData === undefined){
-            requestData = '';
+        if(data == null || data === undefined){
+            data = '';
         }
 
         let options = {
             hostname: '127.0.0.1',
-            port: puerto,
-            path: url,
-            method: metodo,
+            port: port,
+            path: path,
+            method: method,
             headers: {
               'Authorization': 'Basic ' + config.auth,
               'Content-Type': 'application/json',
               'Cache-Control': 'no-cache',
-              'Content-Length': requestData.length
+              'Content-Length': data.length
             },
             encoding: 'utf8',
           }
 
         process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
                 const req = https.request(options, res => {
-                    let __data = ``;
-                    res.on('data', d => {
-                      __data += d;
+                    let queryResponse = ``;
+                    res.on('data', x => {
+                      queryResponse += x;
                     });
                     res.on('end', ()=> {
-                      resolve(__data);
+                      resolve(queryResponse);
                     });
                   });
                   
-                  if(metodo === 'POST' || metodo === 'PATCH')
-                  req.write(requestData);
+                  if(method === 'POST' || method === 'PATCH')
+                  req.write(data);
 
                   req.end();
                 });

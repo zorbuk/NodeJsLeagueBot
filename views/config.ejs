@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include("partials/head"); %>
+</head>
+<body class="container">
+
+<header>
+    <%- include("partials/header"); %>
+</header>
+
+<main>
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <form action="/applySettings" method="POST">
+                        <p>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text" id="basic-addon1">Tamaño de Pantalla: </span>
+                                <input name="screenSizeX" type="text" value='<%- settingScreenSizeX %>' class="form-control" placeholder="width" aria-label="width" aria-describedby="basic-addon1">
+                                <span class="input-group-text" id="basic-addon1">x</span>
+                                <input name="screenSizeY" type="text" value='<%- settingScreenSizeY %>' class="form-control" placeholder="height" aria-label="height" aria-describedby="basic-addon1">
+                              </div>
+                        </p>
+                        <p>
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="inputGroupSelect01">Campeón: </label>
+                                <select class="form-select" name="selectedChampion">
+                                    <% Object.keys(allChampionsList).forEach(function(prop) { %>
+                                        <% if(selectedChampionId == allChampionsList[prop]){ %>
+                                        <option selected="selected" value=<%- allChampionsList[prop] %>><%- prop %></option>
+                                        <% } else { %>
+                                        <option value=<%- allChampionsList[prop] %>><%- prop %></option>
+                                      <% }}); %>
+                                </select>
+                              </div>
+                        </p>
+                        <p>
+                            <div class="input-group mb-3">
+                                <label class="input-group-text" for="inputGroupSelect02">Cola: </label>
+                                <select class="form-select" name="selectedQueue">
+                                    <% Object.keys(allQueues).forEach(function(prop) { %>
+                                        <% if(selectedQueueId == allQueues[prop]){ %>
+                                            <option selected="selected" value=<%- allQueues[prop] %>><%- prop %></option>
+                                            <% } else { %>
+                                            <option value=<%- allQueues[prop] %>><%- prop %></option>
+                                      <% }}); %>
+                                </select>
+                              </div>
+                        </p>
+                        <p>
+                            <input value="Guardar Configuración" type="submit" class="btn btn-primary"></button>
+                        </p>
+                    </form>
+                    </div>
+                </div>
+            </div>
+          </div>
+    </div>
+</main>
+
+<footer>
+    <%- include("partials/footer"); %>
+</footer>
+
+</body>
+</html>

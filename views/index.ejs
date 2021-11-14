@@ -11,50 +11,33 @@
 </header>
 
 <main>
-    <div class="jumbotron">
-        <div class="row">
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <img height="92" width="92" src="http://ddragon.leagueoflegends.com/cdn/11.22.1/img/profileicon/<%- playerIcon -%>.png">
+    <div class="section no-pad-bot" id="index-banner">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m7">
+                  <div class="card">
+                    <div class="card-image">
+                      <img src="http://ddragon.leagueoflegends.com/cdn/11.22.1/img/profileicon/<%- playerIcon -%>.png">
+                      <span class="card-title">
+                            <%- playerName -%> <br><small>Nivel <%- playerLevel -%> [<%- playerLevelProgress -%>%]</small>
+                            <div class="progress">
+                                <div class="determinate" style="width: <%- playerLevelProgress -%>%;"></div>
                             </div>
-                            <div class="col">
-                                <h5><%- playerName -%></h5>
-                                <p>Nivel <%- playerLevel -%></p>
-                                <p>
-                                    <div class="progress" style="background-color:white;border:1px solid black;">
-                                        <div class="progress-bar bg-info" role="progressbar" style="width: '<%- playerLevelProgress -%>%';" aria-valuenow="<%- playerLevelProgress -%>" aria-valuemin="0" aria-valuemax="100"><%- playerLevelProgress -%>%</div>
-                                    </div>
-                                </p>
-                            </div>
-                        </div>
+                        </span>
+                    </div>
+                    <div class="card-content">
+                      <p><b>👁‍🗨 Estado:</b> <%- playerStatus -%></p>
+                    </div>
+                    <div class="card-action">
+                      <a href="/iniciar">🟢 Iniciar</a>
+                      <a href="/detener">🔴 Detener</a>
                     </div>
                   </div>
-
-              
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <p><b>👁‍🗨 Estado:</b> <%- playerStatus -%></p>
-                    </div>
                 </div>
-            </div>
-            <div class="col">
-                <div class="card">
-                    <div class="card-body">
-                        <p><a type="button" href="iniciar" class="btn btn-outline-success">🟢 Iniciar</a></p>
-                        <p><a type="button" href="detener" class="btn btn-outline-danger">🔴 Detener</a></p>
-                    </div>
-                </div>
-            </div>
-          </div>
-        
-
-        
-    </div>
+              </div>
+    
+        </div>
+      </div>    
 </main>
 
 <footer>

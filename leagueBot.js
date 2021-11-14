@@ -42,8 +42,6 @@ const fs = require('fs');
 const app = express();
 
 app.set('view engine', 'ejs');
-
-app.use(express.static("web/public"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -56,13 +54,15 @@ app.get('/', async function(req,res){
     let __parsedPlayer = JSON.parse(__player);
 
     let __status = await gameManager.getGameFlow(config.port);
+    let __gameTime = await ingameManager.getGameTime();
 
     res.render('index', 
     {playerName: __parsedPlayer["displayName"], 
     playerLevel: __parsedPlayer["summonerLevel"], 
     playerIcon: __parsedPlayer["profileIconId"], 
     playerLevelProgress: __parsedPlayer["percentCompleteForNextLevel"],
-    playerStatus: __status}
+    playerStatus: __status,
+    currentGameTime: __gameTime}
     );
 });
 
@@ -195,22 +195,24 @@ async function processStartGame(){
                 // La partida está en progreso.
             case `"InProgress"`:
                 // TODO: Mejorar esto.
-                if(await ingameManager.getGameTime() > 30.0){
-                    let iBestAlly = await ingameManager.getBestAlly();
+                    let gameTime = await ingameManager.getGameTime();
 
-                    robot.keyTap(`f${iBestAlly}`);
+                    if(gameTime > 30.0){
+                        let iBestAlly = await ingameManager.getBestAlly();
 
-                    robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeY"] /2) - 60)
-                        
-                    ks.sendKey('a');
+                        robot.keyTap(`f${iBestAlly}`);
 
-                    await config.sleep(1);
+                        robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeY"] /2) - 60)
+                            
+                        ks.sendKey('a');
 
-                    robot.moveMouse((loadSettings()["screenSizeX"] /2) - 60, (loadSettings()["screenSizeY"] /2) + 60)
-                    robot.mouseClick("right");
+                        await config.sleep(1);
 
-                    ks.sendKey(`f${iBestAlly}`);
-                }
+                        robot.moveMouse((loadSettings()["screenSizeX"] /2) - 60, (loadSettings()["screenSizeY"] /2) + 60)
+                        robot.mouseClick("right");
+
+                        ks.sendKey(`f${iBestAlly}`);
+                    }
                 break;
                 // Dar honor
             case `"PreEndOfGame"`:

@@ -1,9 +1,10 @@
+const { Console } = require('console');
 const https = require('https');
+const { resolve } = require('path');
 const config = require('../config.js');
 
 module.exports = {
     query: async (path, method, data, port)=> {
-      
       return new Promise((resolve, reject) => {
         if(data == null || data === undefined){
             data = '';
@@ -24,7 +25,8 @@ module.exports = {
           }
 
         process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
-                const req = https.request(options, res => {
+                
+                  const req = https.request(options, res => {
                     let queryResponse = ``;
                     res.on('data', x => {
                       queryResponse += x;
@@ -32,6 +34,8 @@ module.exports = {
                     res.on('end', ()=> {
                       resolve(queryResponse);
                     });
+                  }).on('error', () =>{
+                    resolve(0);
                   });
                   
                   if(method === 'POST' || method === 'PATCH')

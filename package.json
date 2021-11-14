@@ -2,7 +2,8 @@
   "name": "nodejsleaguebot-master",
   "version": "1.0.0",
   "description": "Made with NodeJs, RobotJs and Https.",
-  "main": "config.js",
+  "main": "leagueBot.js",
+  "bin":"leagueBot.js",
   "dependencies": {
     "ejs": "^3.1.6",
     "express": "^4.17.1",

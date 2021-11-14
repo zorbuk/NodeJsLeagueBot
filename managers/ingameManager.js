@@ -38,7 +38,13 @@ module.exports = {
         return false;
     },
     getGameTime: async () => {
-        let gameStats = await gameManager.getGameStats(config.portIngame);
+        let gameStats = 0.0;
+        try{
+            gameStats = await gameManager.getGameStats(config.portIngame);
+        }catch{
+            return gameStats;
+        }
+        
         return JSON.parse(gameStats)["gameTime"];
     }
 }

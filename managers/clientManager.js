@@ -33,23 +33,21 @@ module.exports = {
     },
     findGame: (port)=>{
         return new Promise((resolve) => {
-        let data = ``;
-        riotApi.query(`/lol-lobby/v2/lobby/matchmaking/search`, 'POST', data, port).then(result => {
+        riotApi.query(`/lol-lobby/v2/lobby/matchmaking/search`, 'POST', '', port).then(result => {
                 resolve(result);
             })
         });
     },
     acceptGame: (port)=>{
         return new Promise((resolve) => {
-        let data = ``;
-        riotApi.query(`/lol-matchmaking/v1/ready-check/accept`, 'POST', data, port).then(result => {
+        riotApi.query(`/lol-matchmaking/v1/ready-check/accept`, 'POST', '', port).then(result => {
                 resolve(result);
             })
         });
     },
     getPickableChampions: (port)=>{
         return new Promise((resolve) => {
-        riotApi.query('/lol-champ-select/v1/pickable-champion-ids', 'GET').then(result => {
+        riotApi.query('/lol-champ-select/v1/pickable-champion-ids', 'GET', '', port).then(result => {
             resolve(result);
             })
         });

@@ -28,6 +28,15 @@
                     <div class="card-content">
                       <p><b>👁‍🗨 Estado:</b> <%- playerStatus -%></p>
                       <p><b>⌛ Tiempo de Partida:</b> <%- currentGameTime -%></p>
+                      <p>
+                        <ul class="collection">
+                          <li class="collection-item">Asesinatos: <%- currentKda.kills -%></li>
+                          <li class="collection-item">Muertes: <%- currentKda.deaths -%></li>
+                          <li class="collection-item">Asistencias: <%- currentKda.assists -%></li>
+                          <li class="collection-item">Súbditos: <%- currentKda.creepScore -%></li>
+                          <li class="collection-item">Puntuación de Visión: <%- currentKda.wardScore -%></li>
+                        </ul>
+                      </p>
                     </div>
                     <div class="card-action">
                       <a href="/iniciar">🟢 Iniciar</a>

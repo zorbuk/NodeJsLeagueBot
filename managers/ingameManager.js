@@ -25,17 +25,30 @@ module.exports = {
 
         return choosenPlayerIndex;
     },
-    getEventHappend: async (name) => {
-        let events = await gameManager.getGameEvents(config.portIngame);
-        let parsedEvents = JSON.parse(events);
+    getScore: async () => {
+        let inGamePlayerList = await gameManager.getPlayerList(config.portIngame);
+        let inGamePlayerListParsed = JSON.parse(inGamePlayerList);
+        let currentPlayingPlayerName = await gameManager.getActivePlayerName(config.portIngame);
+        if(currentPlayingPlayerName == 0)
+            currentPlayingPlayerName = "";
+        currentPlayingPlayerName = currentPlayingPlayerName.replace(/\"/g, "");
+        let score = {
+            "assists": 0,
+            "creepScore": 0,
+            "deaths": 0,
+            "kills": 0,
+            "wardScore": 0.0
+        };
 
-        parsedEvents["Events"].forEach(event => {
-            if(event["EventName"] === name){
-                return true;
-            }
-        });
+        if(inGamePlayerListParsed){
+            inGamePlayerListParsed.forEach(player => {
+                if(player["summonerName"] == currentPlayingPlayerName && player["team"] == "ORDER"){
+                    score = player["scores"];
+                }
+            });
+        }
 
-        return false;
+        return score;
     },
     getGameTime: async () => {
         let gameStats = 0.0;

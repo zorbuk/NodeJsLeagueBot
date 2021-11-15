@@ -30,7 +30,7 @@ module.exports = {
             })
         });
     },
-    getActivePlayerHabilities:(port)=>{
+    getActivePlayerAbilities:(port)=>{
         return new Promise((resolve) => {
             riotApi.query('/liveclientdata/activeplayerabilities', 'GET', '', port).then(result => {
                 resolve(result);

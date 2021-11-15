@@ -5,35 +5,20 @@ const clientManager = require("./managers/clientManager.js");
 const gameManager = require("./managers/gameManager.js");
 const ingameManager = require("./managers/ingameManager.js");
 const consoleManager = require("./managers/consoleManager.js");
+const fileManager = require("./managers/fileManager.js");
 const ks = require('node-key-sender');
 const http = require('http');
 const express = require('express');
 const ip = require("ip");
-const fs = require('fs');
 
-
-/* ********************
+/* *******************
     Este proyecto ha sido realizado por Zorbuk.
     https://github.com/zorbuk
 
     Las donaciones por paypal son bienvenidas: @mvrec
 
     Las dependencias usadas se pueden ver en package.json
-
-    Configuración Básica:
-    leagueBot.js || __queue : [por defecto, Bots Introducción]
-    leagueBot.js || __champion : [Por defecto, Ashe]
-    config.js || screenSize : [Por defecto, 1920*1080]
-    config.js || leagueOfLegendsLockfile : [Donde esta tu archivo lockfile de league of legends]
-
-*/
-
-/*
-    npm run build32 if you want to target 32 bit processes
-    npm run build64 if you want to target 64 bit processes
-*/
-
-// ********************
+*///******************
 
 /*
     Web Local
@@ -54,7 +39,13 @@ app.get('/', async function(req,res){
     let __parsedPlayer = JSON.parse(__player);
 
     let __status = await gameManager.getGameFlow(config.port);
-    let __gameTime = await ingameManager.getGameTime();
+    let __gameTime = await ingameManager.getGameTime() >> 0;
+
+    var __hours = ~~(__gameTime / 3600);
+    var __minutes = ~~((__gameTime % 3600) / 60);
+    var __seconds = ~~__gameTime % 60;
+
+    let __kda = await ingameManager.getScore();
 
     res.render('index', 
     {playerName: __parsedPlayer["displayName"], 
@@ -62,29 +53,14 @@ app.get('/', async function(req,res){
     playerIcon: __parsedPlayer["profileIconId"], 
     playerLevelProgress: __parsedPlayer["percentCompleteForNextLevel"],
     playerStatus: __status,
-    currentGameTime: __gameTime}
+    currentGameTime: `${__hours}h : ${__minutes}m : ${__seconds}s `,
+    currentKda: __kda}
     );
 });
 
-const loadSettings = () =>{
-    try {
-        const buffer = fs.readFileSync("./settings.json")
-        const stringData = buffer.toString()
-        return JSON.parse(stringData)
-    } catch (error) {
-        consoleManager.write(error);
-        return []
-    }
-}
-
-const writeSettings = (data) =>{
-    const textJSON = JSON.stringify(data)
-    fs.writeFileSync("./settings.json", textJSON)
-}
-
 app.get('/settings', function(req, res){
 
-    let settings = loadSettings();
+    let settings = fileManager.loadFile("./settings.json");
 
     res.render('config', {
         selectedChampionId: settings["selectedChampion"],
@@ -98,7 +74,7 @@ app.get('/settings', function(req, res){
 
 app.post('/applySettings', (req, res) => {
 
-    writeSettings({
+    fileManager.writeFile("./settings.json",{
         selectedQueue: req.body.selectedQueue,
         selectedChampion: req.body.selectedChampion,
         screenSizeX: req.body.screenSizeX,
@@ -174,7 +150,7 @@ async function processStartGame(){
         switch(await gameManager.getGameFlow(config.port)){
                 // Inactivo.
             case `"None"`:
-                await clientManager.createGame(config.port, loadSettings()["selectedQueue"]);
+                await clientManager.createGame(config.port, fileManager.loadFile("./settings.json")["selectedQueue"]);
                 break;
                 // Partida creada.
             case `"Lobby"`:
@@ -189,8 +165,8 @@ async function processStartGame(){
                 break;
                 // En seleccion de campeón.
             case `"ChampSelect"`:
-                if(loadSettings()["selectedQueue"] != config.QueueType.Aram)
-                clientManager.pickChampion(config.port, loadSettings()["selectedChampion"]);
+                if(fileManager.loadFile("./settings.json")["selectedQueue"] != config.QueueType.Aram)
+                    clientManager.pickChampion(config.port, fileManager.loadFile("./settings.json")["selectedChampion"]);
                 break;
                 // La partida está en progreso.
             case `"InProgress"`:
@@ -202,13 +178,13 @@ async function processStartGame(){
 
                         robot.keyTap(`f${iBestAlly}`);
 
-                        robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeY"] /2) - 60)
+                        robot.moveMouse((fileManager.loadFile("./settings.json")["screenSizeX"] /2) + 60, (fileManager.loadFile("./settings.json")["screenSizeY"] /2) - 60)
                             
                         ks.sendKey('a');
 
                         await config.sleep(1);
 
-                        robot.moveMouse((loadSettings()["screenSizeX"] /2) - 60, (loadSettings()["screenSizeY"] /2) + 60)
+                        robot.moveMouse((fileManager.loadFile("./settings.json")["screenSizeX"] /2) - 60, (fileManager.loadFile("./settings.json")["screenSizeY"] /2) + 60)
                         robot.mouseClick("right");
 
                         ks.sendKey(`f${iBestAlly}`);
@@ -216,13 +192,14 @@ async function processStartGame(){
                 break;
                 // Dar honor
             case `"PreEndOfGame"`:
-                robot.moveMouse((loadSettings()["screenSizeX"] /2) + 60, (loadSettings()["screenSizeX"] /2) - 60)
+                robot.moveMouse((fileManager.loadFile("./settings.json")["screenSizeX"] /2) + 60, (fileManager.loadFile("./settings.json")["screenSizeX"] /2) - 60)
                 robot.mouseClick("left");
+                ks.sendKey("escape");
                 break;
                 // Salir de la partida
             case `"EndOfGame"`:
                 __botLookingForGame = false;
-                await clientManager.createGame(config.port, loadSettings()["selectedQueue"]);
+                await clientManager.createGame(config.port, fileManager.loadFile("./settings.json")["selectedQueue"]);
                 break;
             default:
                 await config.sleep(0.1);
